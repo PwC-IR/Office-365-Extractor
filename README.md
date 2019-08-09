@@ -82,7 +82,7 @@ Yammer<br>
 MicrosoftStream<br>
 Project<br>
 SharepointListOperation<br>
-AuditRecords.csvSecurityComplianceAlerts<br>
+SecurityComplianceAlerts<br>
 ThreatIntelligenceUrl<br>
 ThreatIntelligenceAtpContent<br>
 AeD<br>
