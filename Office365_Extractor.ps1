@@ -66,7 +66,7 @@ function Get-startDate{
 		if (!$StartDate) { "Not A valid date and time"}
 	} while ($StartDate -isnot [datetime])	
    
-    return Get-Date $startDate -Format yyyy-MM-dd
+    return Get-Date $startDate -Format "yyyy-MM-dd HH:mm:ss"
 }
 
 
@@ -78,7 +78,7 @@ function Get-endDate{
 		if (!$EndDate) { "Not A valid date and time"}
     } while ($EndDate -isnot [datetime])
 
-    return Get-Date $endDate -Format yyyy-MM-dd
+    return Get-Date $EndDate -Format "yyyy-MM-dd HH:mm:ss"
 }
 
 
@@ -167,8 +167,8 @@ function Main{
 			$OutputDirectory = Join-Path $PSScriptRoot $OutputFile}
 		echo ""
 		
-		$StartDate = Get-StartDate
-		$EndDate = Get-EndDate
+		[DateTime]$StartDate = Get-StartDate
+		[DateTime]$EndDate = Get-EndDate
 		
 		echo ""
 		write-host "Recommended interval: 60"
@@ -295,7 +295,7 @@ function Main{
 					break}}
 			
 			$CurrentStart = $CurrentEnd
-			$Backupdate = $CurrentEnd}
+			[DateTime]$Backupdate = $CurrentEnd}
 		
 		#SHA256 hash calculation for the output files
 		$HASHValues = Join-Path $PSScriptRoot "\Log_Directory\Hashes.csv"
@@ -331,8 +331,8 @@ function Main{
 		ELSE{
 			Menu}
 				
-		$StartDate = Get-StartDate
-		$EndDate = Get-EndDate
+		[DateTime]$StartDate = Get-StartDate
+		[DateTime]$EndDate = Get-EndDate
 		
 		echo ""
 		write-host "Recommended interval is 60"
@@ -474,7 +474,7 @@ function Main{
 								break}}
 							
 						$CurrentStart = $CurrentEnd
-						$Backupdate = $CurrentEnd}}
+						[DateTime]$Backupdate = $CurrentEnd}}
 						
 						else{
 							Write-Host "No logs available for $record"  -ForegroundColor red
@@ -501,8 +501,8 @@ function Main{
 		$RecordTypes = read-host ">"
 		echo ""
 		
-		$StartDate = Get-StartDate
-		$EndDate = Get-EndDate
+		[DateTime]$StartDate = Get-StartDate
+		[DateTime]$EndDate = Get-EndDate
 		
 		echo ""
 		write-host "Recommended interval is 60"
@@ -591,7 +591,7 @@ function Main{
 				ELSE{
 					$IntervalMinutes = $ResetInterval}
 
-				if ($CurrentEnd -gt $EndDate){				
+				if ($CurrentEnd -gt $EndDate){	
 					$DURATION = $EndDate - $Backupdate
 					$durmin = $DURATION.TotalMinutes
 					
@@ -650,7 +650,7 @@ function Main{
 						break}}
 					
 				$CurrentStart = $CurrentEnd
-				$Backupdate = $CurrentEnd}}
+				[DateTime]$Backupdate = $CurrentEnd}}
 				
 				else{
 					Write-Host "No logs available for $record"  -ForegroundColor red
