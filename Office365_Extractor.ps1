@@ -63,10 +63,11 @@ function Get-startDate{
 	    $DateStart= read-host "Please enter start date (format: yyyy-MM-dd) or ENTER for maximum 90 days"
         if ([string]::IsNullOrWhiteSpace($DateStart)) { $DateStart = [datetime]::Now.ToUniversalTime().AddDays(-90) }
 		$StartDate = $DateStart -as [datetime]
-		if (!$StartDate) { "Not A valid date and time"}
-	} while ($StartDate -isnot [datetime])	
-   
+		if (!$StartDate) { write-host "Not A valid date and time"}
+	} while ($StartDate -isnot [datetime])
+	   
     return Get-Date $startDate -Format "yyyy-MM-dd HH:mm:ss"
+	
 }
 
 
@@ -75,7 +76,7 @@ function Get-endDate{
         $DateEnd= read-host "Please enter end date (format: yyyy-MM-dd) or ENTER for today"
         if ([string]::IsNullOrWhiteSpace($DateEnd)) { $DateEnd =  [datetime]::Now.ToUniversalTime() }
 		$EndDate = $DateEnd -as [datetime]
-		if (!$EndDate) { "Not A valid date and time"}
+		if (!$EndDate) { write-host "Not A valid date and time"}
     } while ($EndDate -isnot [datetime])
 
     return Get-Date $EndDate -Format "yyyy-MM-dd HH:mm:ss"
