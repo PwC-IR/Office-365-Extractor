@@ -70,7 +70,6 @@ function Get-startDate{
 	
 }
 
-
 function Get-endDate{
     Do {    
         $DateEnd= read-host "Please enter end date (format: yyyy-MM-dd) or ENTER for today"
@@ -116,7 +115,8 @@ function Main{
 		$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $UserCredential -Authentication Basic -AllowRedirection
 		Import-PSSession $Session
 		
-		$RecordTypes = "ComplianceDLPSharePointClassification","SharePointCommentOperation","DataInsightsRestApiAudit","InformationBarrierPolicyApplication","SharePointListItemOperation","SharePointContentTypeOperation","MicrosoftTeamsAdmin","HRSignal","InformationWorkerProtection","Campaign","DLPEndpoint","TeamsHealthcare","LabelExplorer","PowerAppsPlan","HygieneEvent","PowerAppsApp","ExchangeItemAggregated","SecurityComplianceInsights","WorkplaceAnalytics","DataGovernance","ThreatFinder","AeD","ThreatIntelligenceAtpContent","ThreatIntelligenceUrl","MicrosoftStream","Project","SharepointListOperation","SecurityComplianceAlerts","ThreatIntelligenceUrl","AzureActiveDirectory","AzureActiveDirectoryAccountLogon","AzureActiveDirectoryStsLogon","ComplianceDLPExchange","ComplianceDLPSharePoint","CRM","DataCenterSecurityCmdlet","Discovery","ExchangeAdmin","ExchangeAggregatedOperation","ExchangeItem","ExchangeItemGroup","MicrosoftTeams","OneDrive","PowerBIAudit","SecurityComplianceCenterEOPCmdlet","SharePoint", "SharePointFileOperation","SharePointSharingOperation","SkypeForBusinessCmdlets","SkypeForBusinessPSTNUsage","SkypeForBusinessUsersBlocked","Sway","ThreatIntelligence","Yammer"
+		$RecordTypes = "ExchangeAdmin","ExchangeItem","ExchangeItemGroup","SharePoint","SyntheticProbe","SharePointFileOperation","OneDrive","AzureActiveDirectory","AzureActiveDirectoryAccountLogon","DataCenterSecurityCmdlet","ComplianceDLPSharePoint","Sway","ComplianceDLPExchange","SharePointSharingOperation","AzureActiveDirectoryStsLogon","SkypeForBusinessPSTNUsage","SkypeForBusinessUsersBlocked","SecurityComplianceCenterEOPCmdlet","ExchangeAggregatedOperation","PowerBIAudit","CRM","Yammer","SkypeForBusinessCmdlets","Discovery","MicrosoftTeams","ThreatIntelligence","MailSubmission","MicrosoftFlow","AeD","MicrosoftStream","ComplianceDLPSharePointClassification","ThreatFinder","Project","SharePointListOperation","SharePointCommentOperation","DataGovernance","Kaizala","SecurityComplianceAlerts","ThreatIntelligenceUrl","SecurityComplianceInsights","MIPLabel","WorkplaceAnalytics","PowerAppsApp","PowerAppsPlan","ThreatIntelligenceAtpContent","LabelExplorer","TeamsHealthcare","ExchangeItemAggregated","HygieneEvent","DataInsightsRestApiAudit","InformationBarrierPolicyApplication","SharePointListItemOperation","SharePointContentTypeOperation","SharePointFieldOperation","MicrosoftTeamsAdmin","HRSignal
+","MicrosoftTeamsDevice","MicrosoftTeamsAnalytics","InformationWorkerProtection","Campaign","DLPEndpoint","AirInvestigation","Quarantine","MicrosoftForms"
 		
 		If(!(test-path $OutputDirectory)){
 			Write-host "Creating the following file:" $OutputDirectory}
@@ -324,14 +324,14 @@ function Main{
 			$RecordTypes = "AzureActiveDirectory","AzureActiveDirectoryAccountLogon","AzureActiveDirectoryStsLogon"
 			$RecordFile = "AllAzure"}
 		ELSEIF($inputgroup -eq "3"){
-			$RecordTypes = "ComplianceDLPSharePoint","SharePoint","SharePointFileOperation","SharePointSharingOperation","SharepointListOperation"
+			$RecordTypes = "ComplianceDLPSharePoint","SharePoint","SharePointFileOperation","SharePointSharingOperation","SharepointListOperation", "ComplianceDLPSharePointClassification","SharePointCommentOperation", "SharePointListItemOperation", "SharePointContentTypeOperation", "SharePointFieldOperation"
 			$RecordFile = "AllSharepoint"}
 		ELSEIF($inputgroup -eq "4"){
-			$RecordTypes = "SkypeForBusinessCmdlets","SkypeForBusinessPSTNUsage","SkypeForBusinessUsersBlocked"
+			$RecordTypes = "SkypeForBusinessCmd","SkypeForBusinessPSTNUsage","SkypeForBusinessUsersBlocked"
 			$RecordFile = "AllSkype"}
 		ELSE{
 			Menu}
-				
+			
 		[DateTime]$StartDate = Get-StartDate
 		[DateTime]$EndDate = Get-EndDate
 		
