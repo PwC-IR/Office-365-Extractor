@@ -63,8 +63,7 @@ AzureActiveDirectoryAccountLogon<br>
 DataCenterSecurityCmdlet<br>
 ComplianceDLPSharePoint<br>
 Sway<br>
-ComplianceDL<br>
-PExchange<br>
+ComplianceDLPExchange<br>
 SharePointSharingOperation<br>
 AzureActiveDirectoryStsLogon<br>
 SkypeForBusinessPSTNUsage<br>
@@ -74,9 +73,8 @@ ExchangeAggregatedOperation<br>
 PowerBIAudit<br>
 CRM<br>
 Yammer<br>
-SkypeForBusinessCmd<br>
+SkypeForBusinessCmdlets<br>
 Discovery<br>
-lets<br>
 MicrosoftTeams<br>
 ThreatIntelligence<br>
 MailSubmission<br>
@@ -101,8 +99,7 @@ ThreatIntelligenceAtpContent<br>
 LabelExplorer<br>
 TeamsHealthcare<br>
 ExchangeItemAggregated<br>
-Hygi<br>
-eneEvent<br>
+HygieneEvent<br>
 DataInsightsRestApiAudit<br>
 InformationBarrierPolicyApplication<br>
 SharePointListItemOperation<br>
