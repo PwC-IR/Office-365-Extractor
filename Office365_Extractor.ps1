@@ -81,6 +81,22 @@ function Get-endDate{
     return Get-Date $EndDate -Format "yyyy-MM-dd HH:mm:ss"
 }
 
+function Users{
+	write-host "Would you like to extract log events for [1]All users or [2]Specific users"
+	$AllorSingleUse = read-host ">"
+	
+	if($AllorSingleUse -eq "1"){
+		write-host "Extracting the Unified Audit Log for all users..."
+		$Userstoextract = "*"}
+	
+	elseif($AllorSingleUse -eq "2"){
+		write-host "Provide accounts that you wish to acquire, use comma separated values for multiple accounts, example (bob@acmecorp.onmicrosoft.com,alice@acmecorp.onmicrosoft.com)"
+		$Userstoextract = read-host ">"}
+		
+	else{
+		write-host "Please pick between option 1 or 2"
+		Users}}
+
 
 function Main{
 	####################Configuration settings####################
@@ -92,7 +108,7 @@ function Main{
 	$LogFile = Join-Path $PSScriptRoot $AuditLog
 	$OutputDirectory = Join-Path $PSScriptRoot $OutputFileNumberAuditlogs
 	$OutputFile = Join-Path $PSScriptRoot $CSVoutput	
-
+  
 	#The maximum number of results Microsoft allows is 5000 for each PowerShell session.
 	$ResultSize = 5000
 	$RetryCount = 3
@@ -108,6 +124,9 @@ function Main{
 	Switch ($script:input){
 	#Show available log sources and amount of logs
 	"1" {
+		Users
+		write-host ""
+		
 		$StartDate = Get-StartDate
 		$EndDate = Get-EndDate
 		
@@ -125,7 +144,7 @@ function Main{
 			$date = [datetime]::Now.ToString('HHmm') 
 			$OutputFile = "\Log_Directory\"+$date+"_"+$OutputFile
 			$OutputDirectory = Join-Path $PSScriptRoot $OutputFile}
-
+		
 		echo ""
 		Write-Host "---------------------------------------------------------------------------"
 		Write-Host "|The number of logs between"$StartDate" and "$EndDate" is|"
@@ -135,8 +154,8 @@ function Main{
 		Write-Host "Calculating the number of audit logs" -ForegroundColor Green
 		$TotalCount = Search-UnifiedAuditLog -StartDate $StartDate -EndDate $EndDate -ResultSize 1 | out-string -Stream | select-string ResultCount
 
-		Foreach ($record in $RecordTypes){
-			$SpecificResult = Search-UnifiedAuditLog -StartDate $StartDate -EndDate $EndDate -RecordType $record -ResultSize 1 | out-string -Stream | select-string ResultCount
+		Foreach ($record in $RecordTypes){	
+			$SpecificResult = Search-UnifiedAuditLog -UserIds $Userstoextract -StartDate $StartDate -EndDate $EndDate -RecordType $record -ResultSize 1 | out-string -Stream | select-string ResultCount
 
 			if($SpecificResult){
 				$number = $SpecificResult.tostring().split(":")[1]
@@ -146,7 +165,7 @@ function Main{
 
 		if($TotalCount){
 			$numbertotal =$TotalCount.tostring().split(":")[1]
-			Write-Host "-------------------------"
+			Write-Host "--------------------------------------"
 			Write-Host "Total count:"$numbertotal
 			Write-host "Count complete file is written to $outputDirectory"
 			$StringTotalCount = "Total Count:"
@@ -160,6 +179,9 @@ function Main{
 	
 	#2 Extract all audit logs
 	"2" {
+		Users
+		write-host ""
+	
 		If(!(test-path $OutputFile)){
 			Write-host "Creating the following file:" $OutputFile}
 		else{
@@ -199,13 +221,13 @@ function Main{
 		while ($true){
 			$CurrentEnd = $CurrentStart.AddMinutes($IntervalMinutes)
 			
-			$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -ResultSize 1 | out-string -Stream | select-string ResultCount
+			$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -UserIds $Userstoextract -ResultSize 1 | out-string -Stream | select-string ResultCount
 			if($AmountResults){
 				$number = $AmountResults.tostring().split(":")[1]
 				$script:integer = [int]$number
 				
 				while ($script:integer -gt 5000){
-					$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -ResultSize 1 | out-string -Stream | select-string ResultCount
+					$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -UserIds $Userstoextract -ResultSize 1 | out-string -Stream | select-string ResultCount
 					if($AmountResults){
 						$number = $AmountResults.tostring().split(":")[1]
 						$script:integer = [int]$number
@@ -226,7 +248,7 @@ function Main{
 						$Intervalmin = $IntervalMinutes
 						$CurrentStart = $CurrentStart.AddMinutes($Intervalmin)
 						$CurrentEnd = $CurrentStart.AddMinutes($Intervalmin)
-						$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -ResultSize 1 | out-string -Stream | select-string ResultCount
+						$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -UserIds $Userstoextract -ResultSize 1 | out-string -Stream | select-string ResultCount
 						if($AmountResults){
 							$number = $AmountResults.tostring().split(":")[1]
 							$script:integer = [int]$number}}}
@@ -255,7 +277,7 @@ function Main{
 				Write-LogFile "INFO: Retrieving audit logs between $($CurrentStart) and $($CurrentEnd)"
 				Write-Host "INFO: Retrieving audit logs between $($CurrentStart) and $($CurrentEnd)" -ForegroundColor green
 				
-				[Array]$results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -SessionID $SessionID -SessionCommand ReturnNextPreviewPage -ResultSize $ResultSize
+				[Array]$results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -SessionID $SessionID -UserIds $Userstoextract -SessionCommand ReturnNextPreviewPage -ResultSize $ResultSize
 				if($results){
 					$results | epcsv $OutputFile -NoTypeInformation -Append
 				}
@@ -273,7 +295,7 @@ function Main{
 			 
 			while ($true){		
 				$CurrentEnd = $CurrentEnd.AddSeconds(-1)				
-				[Array]$results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -SessionID $SessionID -SessionCommand ReturnNextPreviewPage -ResultSize $ResultSize
+				[Array]$results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -SessionID $SessionID -UserIds $Userstoextract -SessionCommand ReturnNextPreviewPage -ResultSize $ResultSize
 				$CurrentEnd = $CurrentEnd.AddSeconds(1)
 				$CurrentCount = 0
 				
@@ -315,7 +337,7 @@ function Main{
 		Write-host "4: Extract all Skype logging"
 		write-host "5: Back to menu"
 		
-		$inputgroup = Read-Host "Select an action:"
+		$inputgroup = Read-Host "Select an action"
 		
 		IF($inputgroup -eq "1"){
 			$RecordTypes = "ExchangeAdmin","ExchangeAggregatedOperation","ExchangeItem","ExchangeItemGroup","ExchangeItemAggregated","ComplianceDLPExchange"
@@ -331,7 +353,11 @@ function Main{
 			$RecordFile = "AllSkype"}
 		ELSE{
 			Menu}
-			
+		
+		write-host ""
+		Users
+		Write-host ""
+		
 		[DateTime]$StartDate = Get-StartDate
 		[DateTime]$EndDate = Get-EndDate
 		
@@ -364,7 +390,7 @@ function Main{
 		echo ""
 		
 		Foreach ($record in $RecordTypes){
-			$SpecificResult = Search-UnifiedAuditLog -StartDate $StartDate -EndDate $EndDate -RecordType $record -ResultSize 1 | out-string -Stream | select-string ResultCount
+			$SpecificResult = Search-UnifiedAuditLog -StartDate $StartDate -EndDate $EndDate -RecordType $record -UserIds $Userstoextract -ResultSize 1 | out-string -Stream | select-string ResultCount
 	
 			if($SpecificResult){
 				$NumberOfLogs = $SpecificResult.tostring().split(":")[1]
@@ -381,14 +407,14 @@ function Main{
 				
 				while ($true){
 					$CurrentEnd = $CurrentStart.AddMinutes($IntervalMinutes)
-					$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -ResultSize 1 | out-string -Stream | select-string ResultCount
+					$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -UserIds $Userstoextract -ResultSize 1 | out-string -Stream | select-string ResultCount
 					
 					if($AmountResults){
 						$number = $AmountResults.tostring().split(":")[1]
 						$script:integer = [int]$number
 					
 						while ($script:integer -gt 5000){
-							$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -ResultSize 1 | out-string -Stream | select-string ResultCount
+							$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -UserIds $Userstoextract -ResultSize 1 | out-string -Stream | select-string ResultCount
 							if($AmountResults){
 									$number = $AmountResults.tostring().split(":")[1]
 									$script:integer = [int]$number
@@ -407,7 +433,7 @@ function Main{
 								$Intervalmin = $IntervalMinutes
 								$CurrentStart = $CurrentStart.AddMinutes($Intervalmin)
 								$CurrentEnd = $CurrentStart.AddMinutes($Intervalmin)
-								$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -ResultSize 1 | out-string -Stream | select-string ResultCount
+								$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -UserIds $Userstoextract -ResultSize 1 | out-string -Stream | select-string ResultCount
 								if($AmountResults){
 									write-host $AmountResults
 									$number = $AmountResults.tostring().split(":")[1]
@@ -436,7 +462,7 @@ function Main{
 							Write-LogFile "INFO: Retrieving audit logs between $($CurrentStart) and $($CurrentEnd)"
 							Write-Host "INFO: Retrieving audit logs between $($CurrentStart) and $($CurrentEnd)" -ForegroundColor green
 							
-							[Array]$results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -SessionID $SessionID -SessionCommand ReturnNextPreviewPage -ResultSize $ResultSize
+							[Array]$results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -SessionID $SessionID -UserIds $Userstoextract -SessionCommand ReturnNextPreviewPage -ResultSize $ResultSize
 							if($results){
 								$results | epcsv $OutputFile -NoTypeInformation -Append
 							}
@@ -453,7 +479,7 @@ function Main{
 						
 						while ($true){
 							$CurrentEnd = $CurrentEnd.AddSeconds(-1)
-							[Array]$results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -SessionID $SessionID -SessionCommand ReturnNextPreviewPage -ResultSize $ResultSize
+							[Array]$results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -UserIds $Userstoextract -SessionID $SessionID -SessionCommand ReturnNextPreviewPage -ResultSize $ResultSize
 							$CurrentEnd = $CurrentEnd.AddSeconds(1)
 							
 							if ($results -eq $null -or $results.Count -eq 0){
@@ -534,7 +560,7 @@ function Main{
 		echo ""
 
 		Foreach ($record in $RecordTypes.Split(",")){
-			$SpecificResult = Search-UnifiedAuditLog -StartDate $StartDate -EndDate $EndDate -RecordType $record -ResultSize 1 | out-string -Stream | select-string ResultCount
+			$SpecificResult = Search-UnifiedAuditLog -StartDate $StartDate -EndDate $EndDate -RecordType $record -UserIds $Userstoextract -ResultSize 1 | out-string -Stream | select-string ResultCount
 
 			if($SpecificResult) {
 				$NumberOfLogs = $SpecificResult.tostring().split(":")[1]
@@ -557,14 +583,14 @@ function Main{
 				while ($true){
 				$CurrentEnd = $CurrentStart.AddMinutes($IntervalMinutes)
 				
-				echo Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -ResultSize 1 | out-string -Stream | select-string ResultCount
-				$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -ResultSize 1 | out-string -Stream | select-string ResultCount
+				echo Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -UserIds $Userstoextract -ResultSize 1 | out-string -Stream | select-string ResultCount
+				$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -UserIds $Userstoextract -ResultSize 1 | out-string -Stream | select-string ResultCount
 				if($AmountResults){
 					$number = $AmountResults.tostring().split(":")[1]
 					$script:integer = [int]$number
 					
 					while ($script:integer -gt 5000){
-						$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -ResultSize 1 | out-string -Stream | select-string ResultCount
+						$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -UserIds $Userstoextract -ResultSize 1 | out-string -Stream | select-string ResultCount
 						if($AmountResults){
 							$number = $AmountResults.tostring().split(":")[1]
 							$script:integer = [int]$number
@@ -583,7 +609,7 @@ function Main{
 							$Intervalmin = $IntervalMinutes
 							$CurrentStart = $CurrentStart.AddMinutes($Intervalmin)
 							$CurrentEnd = $CurrentStart.AddMinutes($Intervalmin)
-							$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -ResultSize 1 | out-string -Stream | select-string ResultCount
+							$AmountResults = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -UserIds $Userstoextract -ResultSize 1 | out-string -Stream | select-string ResultCount
 							if($AmountResults){
 								$number = $AmountResults.tostring().split(":")[1]
 								$script:integer = [int]$number}}
@@ -611,7 +637,7 @@ function Main{
 					Write-LogFile "INFO: Retrieving audit logs between $($CurrentStart) and $($CurrentEnd)"
 					Write-Host "INFO: Retrieving audit logs between $($CurrentStart) and $($CurrentEnd)" -ForegroundColor green
 					
-					[Array]$results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -SessionID $SessionID -SessionCommand ReturnNextPreviewPage -ResultSize $ResultSize
+					[Array]$results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -UserIds $Userstoextract -SessionID $SessionID -SessionCommand ReturnNextPreviewPage -ResultSize $ResultSize
 					if($results){
 						$results | epcsv $OutputFile -NoTypeInformation -Append
 					}
@@ -629,7 +655,7 @@ function Main{
 
 				while ($true){
 					$CurrentEnd = $CurrentEnd.AddSeconds(-1)
-					[Array]$results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -SessionID $SessionID -SessionCommand ReturnNextPreviewPage -ResultSize $ResultSize
+					[Array]$results = Search-UnifiedAuditLog -StartDate $CurrentStart -EndDate $CurrentEnd -RecordType $record -UserIds $Userstoextract -SessionID $SessionID -SessionCommand ReturnNextPreviewPage -ResultSize $ResultSize
 					$CurrentEnd = $CurrentEnd.AddSeconds(1)
 					
 					if ($results -eq $null -or $results.Count -eq 0){
