@@ -22,6 +22,7 @@ be configured with the required Record Types. A full list of recordtypes can be 
 The output files will be writen in a directory called 'Log_Directory" and will be given the name of their recordtype e.g. (ExchangeItem_AuditRecords.csv) <br>
 
 <h3>Prerequisites</h3>
+	-Exchange Online PowerShell V2 Module<br>
 	-PowerShell<br>
 	-Office365 account with privileges to access/extract audit logging<br>
 	-One of the following windows versions:<br> 
@@ -32,6 +33,13 @@ Windows Server 2019, Windows Server 2016, Windows Server 2012 R2, Windows Server
 You have to be assigned the View-Only Audit Logs or Audit Logs role in Exchange Online to search the Office 365 audit log.
 By default, these roles are assigned to the Compliance Management and Organization Management role groups on the Permissions page in the Exchange admin center. To give a user the ability to search the Office 365 audit log with the minimum level of privileges, you can create a custom role group in Exchange Online, add the View-Only Audit Logs or Audit Logs role, and then add the user as a member of the new role group. For more information, see Manage role groups in Exchange Online.
 https://docs.microsoft.com/en-us/office365/securitycompliance/search-the-audit-log-in-security-and-compliance)<br>
+
+<h3>Install Exchange Online Powershell V2 Module</h3>
+1.	Start Windows PowerShell with the “Run as administrator” option<br>
+2.	Install PowerShellGet Module. To install the ExchangeOnlineManagement module, you need PowerShellGet 2.0 or later version. Else, you end up with an error<br>
+	Run: Install-Module PowerShellGet -Force<br>
+3.	Run below cmdlet to install Exchange Online PowerShell V2 Module:<br>
+	Install-Module –Name ExchangeOnlineManagement<br>
 
 <h3>How to use the script</h3>
 1.	Download the Office365_Extractor.ps1<br>
