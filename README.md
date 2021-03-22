@@ -36,10 +36,8 @@ https://docs.microsoft.com/en-us/office365/securitycompliance/search-the-audit-l
 
 <h3>Install Exchange Online Powershell V2 Module</h3>
 1.	Start Windows PowerShell with the “Run as administrator” option<br>
-2.	Install PowerShellGet Module. To install the ExchangeOnlineManagement module, you need PowerShellGet 2.0 or later version. Else, you end up with an error<br>
-	Run: Install-Module PowerShellGet -Force<br>
-3.	Run below cmdlet to install Exchange Online PowerShell V2 Module:<br>
-	Install-Module –Name ExchangeOnlineManagement<br>
+2.	Install PowerShellGet Module. To install the ExchangeOnlineManagement module, you need PowerShellGet 2.0 or later version. Else, you end up with an error: Run: Install-Module PowerShellGet -Force<br>
+3.	Run the following cmdlet to install Exchange Online PowerShell V2 Module: Install-Module –Name ExchangeOnlineManagement<br>
 
 <h3>How to use the script</h3>
 1.	Download the Office365_Extractor.ps1<br>
