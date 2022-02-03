@@ -203,8 +203,9 @@ function Main{
 		echo ""
 		Write-Host "------------------------------------------------------------------------------------------"
 		Write-Host "|Extracting all available audit logs between "$StartDate" and "$EndDate                "|"
-		write-host "|Time interval: $IntervalMinutes                                                                        |"
-		Write-Host "------------------------------------------------------------------------------------------" 
+		$prefix = "|Time interval: $IntervalMinutes                                                                       "
+		1..$IntervalMinutes.ToString().Length | % {$prefix = $prefix.Substring(0,$prefix.Length-1)}
+		Write-Host $prefix "|"Write-Host "------------------------------------------------------------------------------------------" 
 		echo ""
 		 
 		while ($true){
@@ -367,7 +368,9 @@ function Main{
 		echo ""
 		Write-Host "----------------------------------------------------------------------------"
 		Write-Host "|Extracting audit logs between "$StartDate" and "$EndDate"|"
-		write-host "|Time interval: $IntervalMinutes                                                                       |"
+		$prefix = "|Time interval: $IntervalMinutes                                                          "
+		1..$IntervalMinutes.ToString().Length | % {$prefix = $prefix.Substring(0,$prefix.Length-1)}
+		Write-Host $prefix "|"
 		Write-Host "----------------------------------------------------------------------------" 
 		Write-Host "The following RecordTypes are configured to be extracted:" -ForegroundColor Green
 		Foreach ($record in $RecordTypes){
@@ -531,7 +534,9 @@ function Main{
 		echo ""
 		Write-Host "----------------------------------------------------------------------------"
 		Write-Host "|Extracting audit logs between "$StartDate" and "$EndDate"|"
-		write-host "|Time interval: $IntervalMinutes                                                                       |"
+		$prefix = "|Time interval: $IntervalMinutes                                                          "
+		1..$IntervalMinutes.ToString().Length | % {$prefix = $prefix.Substring(0,$prefix.Length-1)}
+		Write-Host $prefix "|"
 		Write-Host "----------------------------------------------------------------------------" 
 		Write-Host "The following RecordTypes are configured to be extracted:" -ForegroundColor Green
 		
