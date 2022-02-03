@@ -203,10 +203,9 @@ function Main{
 		echo ""
 		Write-Host "------------------------------------------------------------------------------------------"
 		Write-Host "|Extracting all available audit logs between "$StartDate" and "$EndDate                "|"
-		$prefix = "|Time interval: $IntervalMinutes                                                          "
+		$prefix = "|Time interval: $IntervalMinutes                                                                       "
     	1..$IntervalMinutes.ToString().Length | % {$prefix = $prefix.Substring(0,$prefix.Length-1)}
-    	Write-Host $prefix "|"
-		Write-Host "------------------------------------------------------------------------------------------" 
+    	Write-Host $prefix "|"Write-Host "------------------------------------------------------------------------------------------" 
 		echo ""
 		 
 		while ($true){
